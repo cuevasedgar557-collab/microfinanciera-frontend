@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro financiera</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <script>
+  // 🔒 PROTECCION DE ACCESO
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "login.html";
+  }
+</script>
+<h1>Micro financiera</h1>
+<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+<!-- MENÚ -->
+<div class="menu">
+    <button onclick="logout()">Salir</button>
+    <button onclick="mostrarSeccion('dashboard')">Dashboard</button>
+    <button onclick="mostrarSeccion('clientes')">Clientes</button>
+    <button onclick="mostrarSeccion('prestamos')">Préstamos</button>
+    <button onclick="mostrarSeccion('cuotas')">Cuotas</button>
+    <button onclick="mostrarSeccion('historial')">Historial</button>
+    <button onclick="mostrarSeccion('frecuentes')">Clientes Frecuentes</button>
+    <button onclick="mostrarSeccion('adminTrabajos')">Trabajos</button>
+    <button onclick="mostrarSeccion('adminBarrios')">Barrios</button>
+    <button onclick="mostrarSeccion('adminUsuarios')">Usuarios</button>
+    <button onclick="mostrarSeccion('recordatorios')">Recordatorios</button>
+</div>
+
+<!-- CLIENTES -->
+<div id="clientes" class="seccion">
+
+  <!-- REGISTRAR CLIENTE -->
+  <div class="card">
+    <h2>Registrar Cliente</h2>
+    <p id="mensaje"></p>
+
+    <input type="text" id="nombre" placeholder="Nombre completo">
+    <input type="text" id="cedula" placeholder="Cédula">
+
+    <select id="sexo">
+      <option value="">Seleccione sexo</option>
+      <option value="M">Masculino</option>
+      <option value="F">Femenino</option>
+    </select>
+    <select id="estadoCivil">
+      <option value="">Estado civil</option>
+      <option value="soltero">Soltero</option>
+      <option value="casado">Casado</option>
+      <option value="union libre">Unión libre</option>
+      <option value="divorciado">Divorciado</option>
+      <option value="viudo">Viudo</option>
+    </select>
+
+    <input type="text" id="telefono" placeholder="+505XXXXXXXX">
+
+    <!-- DEPARTAMENTO -->
+<select id="departamento">
+  <option value="">Seleccione departamento</option>
+  <option value="1">Chinandega</option>
+  <option value="2">León</option>
+</select>
+
+<!-- MUNICIPIO -->
+ <select id="municipio">
+  <option value="">Seleccione municipio</option>
+</select>
+<!-- BARRIO (YA NO VA HARDCODED) -->
+<input
+  type="text"
+  id="barrioInput"
+  list="listaBarrios"
+  placeholder="Escribe barrio..."
+  autocomplete="off"
+/>
+  <datalist id="listaBarrios"></datalist>
+
+    <select id="trabajo">
+      <option value="">Seleccione trabajo</option>
+    </select>
+
+    <textarea
+      id="direccion"
+      placeholder="Dirección específica"
+      style="width:88%; min-height:80px; margin:12px auto; display:block;">
+    </textarea>
+
+    <button id="btnGuardar" type="button">Guardar Cliente</button>
+  </div>
+
+  <!-- LISTA DE CLIENTES -->
+  <div class="card">
+    <h2>Clientes Registrados</h2>
+    <ul id="listaClientes"></ul>
+  </div>
+
+</div>
+
+<!-- FICHA DEL CLIENTE -->
+<div id="fichaCliente" class="seccion ficha-full">
+  <div class="ficha-contenedor">
+
+    <button type="button" onclick="volverAClientes()" style="margin-bottom:15px;">
+      ← Volver a Clientes
+    </button>
+
+    <div class="ficha">
+
+      <!-- FOTO -->
+      <img id="fotoCliente" src="" alt="Foto cliente">
+
+      <!-- INFO PRINCIPAL (SOLO DATOS DEL CLIENTE) -->
+      <div class="info">
+        <h2 id="fichaNombre"></h2>
+
+        <p><strong>Cédula:</strong> <span id="fichaCedula"></span></p>
+        <p><strong>Sexo:</strong> <span id="fichaSexo"></span></p>
+        <p><strong>Estado civil:</strong> <span id="fichaEstadoCivil"></span></p>
+        <p><strong>Teléfono:</strong> <span id="fichaTelefono"></span></p>
+        <p><strong>Departamento:</strong> <span id="fichaDepartamento"></span></p>
+        <p><strong>Municipio:</strong> <span id="fichaMunicipio"></span></p>
+        <p><strong>Trabajo:</strong> <span id="fichaTrabajo"></span></p>
+        <p><strong>Barrio:</strong> <span id="fichaBarrio"></span></p>
+        <p><strong>Dirección:</strong> <span id="fichaDireccion"></span></p>
+        <p><strong>Préstamos completados:</strong> <span id="totalPagado"></span></p>
+      </div>
+
+    </div>
+
+    <hr>
+
+    <!-- PRÉSTAMOS -->
+    <div class="ficha-seccion">
+      <h3>Préstamos</h3>
+      <div id="prestamosCliente">
+        Cargando préstamos...
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- COMENTARIOS -->
+    <div class="ficha-seccion">
+      <h3>Comentarios</h3>
+
+      <textarea
+        id="comentarioTexto"
+        placeholder="Escribe un comentario sobre este cliente..."
+        style="width:100%; min-height:80px;">
+      </textarea>
+
+      <br><br>
+
+      <button type="button" id="btnGuardarComentario">
+        Guardar comentario
+      </button>
+
+      <div id="listaComentarios" style="margin-top:15px;"></div>
+    </div>
+
+    <hr>
+
+    <!-- RECORDATORIOS -->
+    <div class="card ficha-recordatorios">
+      <h3>📌 Recordatorios</h3>
+
+      <!-- Formulario -->
+      <textarea
+        id="recordatorioTexto"
+        placeholder="Escribe el acuerdo o recordatorio...">
+      </textarea>
+
+      <br>
+
+      <input type="date" id="recordatorioFecha">
+
+      <br><br>
+
+      <button id="btnCrearRecordatorio">
+        Guardar recordatorio
+      </button>
+
+      <hr>
+
+      <!-- Pendientes -->
+      <h4>🟡 Pendientes</h4>
+      <div id="listaRecordatoriosPendientes"></div>
+
+      <hr>
+
+      <!-- Hechos -->
+      <h4>✅ Hechos</h4>
+      <div id="listaRecordatoriosHechos"></div>
+    </div>
+
+    <br>
+
+    <button
+        type="button"
+        style="margin-top:15px;"
+        onclick="abrirRegistroCliente()">
+          📊 Ver Registro del Cliente
+      </button>
+
+      <br>
+    <!-- ELIMINAR CLIENTE -->
+    <button id="btnEliminarFicha" class="eliminar" type="button">
+      Eliminar Cliente
+    </button>
+
+  </div>
+</div>
+
+
+<!-- PRÉSTAMOS -->
+<div id="prestamos" class="seccion">
+
+  <div class="card">
+    <h2>Asignar Préstamo</h2>
+
+    <input
+      type="text"
+      id="nombrePrestamo"
+      list="listaNombres"
+      placeholder="Nombre del cliente"
+    >
+    <datalist id="listaNombres"></datalist>
+
+    <input type="number" id="interes" placeholder="Interés (%)">
+    <input type="number" id="monto" placeholder="Monto">
+    <input type="number" id="plazo" placeholder="Meses">
+
+    <select id="tipoCuota">
+      <option value="diaria">Diaria</option>
+      <option value="semanal">Semanal</option>
+      <option value="quincenal">Quincenal</option>
+      <option value="mensual" selected>Mensual</option>
+    </select>
+    <!-- Tipos de respaldo-->
+    <label>Tipo de respaldo:</label>
+      <select id="tipoRespaldo">
+        <option value="">Seleccione...</option>
+        <option value="fiador">Fiador</option>
+        <option value="garantia">Garantía</option>
+      </select>
+
+      <div id="formGarantia" style="display:none;">
+          <h4>Garantía</h4>
+            <textarea id="garantiaTexto" placeholder="Describa la garantía..."></textarea>
+      </div>
+     <div id="formFiador" style="display:none;">
+  <h4>Datos del Fiador</h4>
+
+  <input type="text" id="fiadorNombre" placeholder="Nombre completo">
+  <input type="text" id="fiadorCedula" placeholder="Cédula">
+
+  <select id="fiadorSexo">
+    <option value="">Seleccione sexo</option>
+    <option value="M">Masculino</option>
+    <option value="F">Femenino</option>
+  </select>
+
+  <select id="fiadorEstadoCivil">
+    <option value="">Estado civil</option>
+    <option value="soltero">Soltero</option>
+    <option value="casado">Casado</option>
+    <option value="union libre">Unión libre</option>
+    <option value="divorciado">Divorciado</option>
+    <option value="viudo">Viudo</option>
+  </select>
+
+  <input type="text" id="fiadorTelefono" placeholder="+505XXXXXXXX">
+
+  <!-- Departamento -->
+  <select id="fiadorDepartamento">
+    <option value="">Seleccione departamento</option>
+    <option value="1">Chinandega</option>
+    <option value="2">León</option>
+  </select>
+
+  <!-- Municipio -->
+  <select id="fiadorMunicipio">
+    <option value="">Seleccione municipio</option>
+  </select>
+
+  <!-- Barrio -->
+  <input
+    type="text"
+    id="fiadorBarrioInput"
+    list="listaBarriosFiador"
+    placeholder="Escribe barrio..."
+    autocomplete="off"
+  />
+  <datalist id="listaBarriosFiador"></datalist>
+
+  <select id="fiadorTrabajo">
+    <option value="">Seleccione trabajo</option>
+  </select>
+
+  <textarea
+    id="fiadorDireccion"
+    placeholder="Dirección específica"
+    style="width:88%; min-height:80px; margin:12px auto; display:block;">
+  </textarea>
+
+  <!-- PARTE NUEVA QUE NO TIENE CLIENTE -->
+  <select id="fiadorParentesco">
+    <option value="">Parentesco</option>
+    <option value="padre">Padre</option>
+    <option value="madre">Madre</option>
+    <option value="hermano">Hermano</option>
+    <option value="amigo">Amigo</option>
+    <option value="otro">Otro</option>
+  </select>
+</div>
+
+
+    <button id="btnPrestamo">Asignar</button>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2>Agregar préstamo existente</h2>
+
+    <input
+      type="text"
+      id="nombrePrestamoExistente"
+      list="listaNombres"
+      placeholder="Nombre del cliente"
+    >
+
+    <input type="number" id="montoExistente" placeholder="Monto">
+    <input type="number" id="interesExistente" placeholder="Interés (%)">
+    <input type="date" id="fechaInicioExistente" placeholder="Fecha de inicio">
+    <input type="number" id="plazoExistente" placeholder="Plazo">
+
+    <select id="tipoCuotaExistente">
+      <option value="diaria">Diaria</option>
+      <option value="semanal">Semanal</option>
+      <option value="quincenal">Quincenal</option>
+      <option value="mensual" selected>Mensual</option>
+    </select>
+
+    <input type="number" id="cuotasPagadasExistente" placeholder="Cuotas pagadas" min="0">
+
+    <label>Tipo de respaldo:</label>
+    <select id="tipoRespaldoExistente">
+      <option value="">Seleccione...</option>
+      <option value="fiador">Fiador</option>
+      <option value="garantia">Garantía</option>
+    </select>
+
+    <div id="formGarantiaExistente" style="display:none; margin-top:10px;">
+      <h4>Garantía</h4>
+      <textarea id="garantiaTextoExistente" placeholder="Describa la garantía..."></textarea>
+    </div>
+
+    <div id="formFiadorExistente" style="display:none; margin-top:10px;">
+      <h4>Datos del Fiador</h4>
+
+      <input type="text" id="fiadorNombreExistente" placeholder="Nombre completo">
+      <input type="text" id="fiadorCedulaExistente" placeholder="Cédula">
+
+      <select id="fiadorSexoExistente">
+        <option value="">Seleccione sexo</option>
+        <option value="M">Masculino</option>
+        <option value="F">Femenino</option>
+      </select>
+
+      <select id="fiadorEstadoCivilExistente">
+        <option value="">Estado civil</option>
+        <option value="soltero">Soltero</option>
+        <option value="casado">Casado</option>
+        <option value="union libre">Unión libre</option>
+        <option value="divorciado">Divorciado</option>
+        <option value="viudo">Viudo</option>
+      </select>
+
+      <input type="text" id="fiadorTelefonoExistente" placeholder="+505XXXXXXXX">
+
+      <select id="fiadorDepartamentoExistente">
+        <option value="">Seleccione departamento</option>
+        <option value="1">Chinandega</option>
+        <option value="2">León</option>
+      </select>
+
+      <select id="fiadorMunicipioExistente">
+        <option value="">Seleccione municipio</option>
+      </select>
+
+      <input
+        type="text"
+        id="fiadorBarrioInputExistente"
+        list="listaBarriosFiadorExistente"
+        placeholder="Escribe barrio..."
+        autocomplete="off"
+      />
+      <datalist id="listaBarriosFiadorExistente"></datalist>
+
+      <select id="fiadorTrabajoExistente">
+        <option value="">Seleccione trabajo</option>
+      </select>
+
+      <textarea
+        id="fiadorDireccionExistente"
+        placeholder="Dirección específica"
+        style="width:88%; min-height:80px; margin:12px auto; display:block;">
+      </textarea>
+
+      <select id="fiadorParentescoExistente">
+        <option value="">Parentesco</option>
+        <option value="padre">Padre</option>
+        <option value="madre">Madre</option>
+        <option value="hermano">Hermano</option>
+        <option value="amigo">Amigo</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+
+    <button id="btnPrestamoExistente">Agregar préstamo existente</button>
+  </div>
+
+</div>
+<!-- CUOTAS -->
+<div id="cuotas" class="seccion">
+    <div class="card">
+        <h2>Calendario de Pagos</h2>
+      <input
+      type="text"
+      id="buscarClienteCuotas"
+      placeholder="Buscar cliente"/>
+        <div id="calendarioCuotas"></div>
+    </div>
+</div>
+<!-- HISTORIAL -->
+<div id="historial" class="seccion">
+  <div class="card">
+    <h2>Historial de Préstamos</h2>
+    <div id="listaHistorial"></div>
+  </div>
+</div>
+<!-- CLIENTES FRECUENTES -->
+<div id="frecuentes" class="seccion">
+  <div class="card">
+    <h2>⭐ Clientes Frecuentes</h2>
+    <div id="listaFrecuentes"></div>
+  </div>
+</div>
+<!-- ADMINISTRAR TRABAJOS -->
+<div id="adminTrabajos" class="seccion">
+  <div class="card">
+    <h2>Administrar Trabajos</h2>
+
+    <input
+      type="text"
+      id="nuevoTrabajo"
+      placeholder="Nombre del trabajo"
+    />
+
+    <button onclick="crearTrabajoAdmin()">
+      Agregar Trabajo
+    </button>
+
+    <ul id="listaTrabajosAdmin"></ul>
+  </div>
+</div>
+<!-- ADMINISTRAR BARRIOS -->
+<div id="adminBarrios" class="seccion">
+  <div class="card">
+    <h2>Administrar Barrios</h2>
+
+    <!-- DEPARTAMENTO -->
+    <label>Departamento</label>
+    <select id="departamentoBarrio">
+      <option value="">Seleccione departamento</option>
+    </select>
+
+    <!-- MUNICIPIO -->
+    <label>Municipio</label>
+    <select id="municipioBarrio">
+      <option value="">Seleccione municipio</option>
+    </select>
+
+    <!-- NOMBRE DEL BARRIO -->
+    <label>Nombre del barrio</label>
+    <input
+      type="text"
+      id="nuevoBarrio"
+      placeholder="Nombre del barrio"
+    />
+
+    <button onclick="crearBarrioAdmin()">
+      Agregar Barrio
+    </button>
+
+    <hr>
+    
+    <h3>⚠️ Barrios pendientes</h3>
+      <ul id="listaBarriosPendientes"></ul>
+    <hr>
+
+    <h3>Barrios registrados</h3>
+    <ul id="listaBarriosAdmin"></ul>
+  </div>
+</div>
+<div id="adminUsuarios" class="seccion">
+  <div class="card">
+    <h2>Administrar Usuarios</h2>
+
+    <input type="text" id="nombreUsuario" placeholder="Nombre completo">
+    <input type="text" id="usuarioNuevo" placeholder="Usuario">
+    <input type="password" id="passwordNuevo" placeholder="Contraseña">
+
+    <select id="rolUsuario">
+      <option value="1">Administrador</option>
+      <option value="2">Trabajador</option>
+    </select>
+
+    <button onclick="crearUsuario()">Crear Usuario</button>
+
+    <hr>
+    <ul id="listaUsuarios"></ul>
+  </div>
+</div>
+
+<div id="recordatorios" class="seccion">
+  <h2>🗓 Recordatorios</h2>
+
+  <!-- Filtros de vista -->
+  <div class="recordatorios-toolbar">
+    <button onclick="cargarRecordatorios('hoy')">Hoy</button>
+    <button onclick="cargarRecordatorios('todos')">Todos</button>
+    <button onclick="cargarRecordatorios('vencidos')">Vencidos</button>
+  </div>
+
+  <div id="listaRecordatorios">
+    <p>Cargando recordatorios…</p>
+  </div>
+</div>
+<!-- REGISTRO DEL CLIENTE -->
+<div id="registroCliente" class="seccion ficha-full">
+
+  <div class="ficha-contenedor">
+
+    <button type="button" onclick="volverAFichaCliente()" style="margin-bottom:15px;">
+      ← Volver a la ficha del cliente
+    </button>
+
+    <h2>📊 Registro del Cliente</h2>
+
+    <!-- RESUMEN -->
+    <div class="card">
+      <h3>Resumen del historial</h3>
+      <p><strong>Préstamos finalizados:</strong> <span id="regPrestamos"></span></p>
+      <p><strong>Cuotas en mora:</strong> <span id="regCuotasMora"></span></p>
+      <p><strong>Máximo atraso:</strong> <span id="regMaxDias"></span> días</p>
+      <p><strong>Evaluación:</strong> <span id="regEvaluacion"></span></p>
+    </div>
+
+    <!-- AQUÍ LUEGO VAN LOS GRÁFICOS -->
+    <div class="card">
+      <h3>📈 Gráficos</h3>
+      <p>(Aquí luego se pondrán los gráficos)</p>
+    </div>
+
+    <!-- HISTORIAL DETALLADO -->
+    <div class="card">
+      <h3>Historial de préstamos</h3>
+      <div id="registroHistorial">
+        Selecciona un cliente
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- DASHBOARD NUEVO -->
+<div id="dashboard" class="seccion">
+
+  <!-- 🟦 FILA SUPERIOR -->
+  <div class="dash-row">
+
+    <!-- ✅ COBROS HOY -->
+    <div class="card mini">
+      <h3>📅 Cobros de hoy</h3>
+      <div id="cobrosHoy"></div>
+    </div>
+
+    <!-- ✅ RECORDATORIOS -->
+    <div class="card mini">
+      <h3>⚠️ Recordatorios</h3>
+      <div id="recordatoriosHoy"></div>
+    </div>
+
+    <!-- 💳 PAGOS HOY -->
+    <div class="card mini">
+      <h3>💳 Pagos de hoy</h3>
+      <div id="pagosHoy"></div>
+    </div>
+
+  </div>
+
+  <!-- 🟩 META DEL DÍA -->
+  <div class="card">
+    <h3>💰 Meta del día</h3>
+
+    <canvas id="graficoMeta" width="300" height="150"></canvas>
+
+    <div id="metaTexto"></div>
+  </div>
+
+  <!-- Metas anteriores -->
+  <div class="card">
+    <h3>📊 Metas anteriores</h3>
+    <div id="metasAnteriores"></div>
+  </div>
+
+  <!-- Clientes -->
+  <div class="card">
+    <h3>👥 Clientes</h3>
+
+    <h4>🟢 Con préstamo activo</h4>
+    <div id="clientesActivos"></div>
+
+    <h4 style="margin-top:10px;">🔴 Sin préstamo activo</h4>
+    <div id="clientesSinPrestamo"></div>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/recordatorios.js"></script>
+<script src="js/cuotas.js"></script>
+<script src="js/prestamos.js"></script>
+<script src="js/clientes.js"></script>
+<script src="scripts.js"></script>
+<script src="js/barrios.admin.js"></script>
+<script src="js/trabajos.admin.js"></script>
+<script src="js/dashboard.js"></script>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="login-page">
+  <div class="login-card">
+
+    <h2>Iniciar sesión</h2>
+
+    <input id="loginUsuario" placeholder="Usuario">
+    <input id="loginPassword" type="password" placeholder="Contraseña">
+
+    <button onclick="login()">Entrar</button>
+    <p id="loginMsg"></p>
+
+  </div>
+</div>
+
+  <script src="js/config.js"></script>
+  <script>
+function login() {
+  const usuario = document.getElementById("loginUsuario").value;
+  const password = document.getElementById("loginPassword").value;
+
+  fetch(`${API_URL}/api/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ usuario, password })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.token) {
+
+        console.log("LOGIN RESPONSE:", data);
+
+        localStorage.setItem("token", data.token);
+
+        // ✅ FIX IMPORTANTE — TOMAR DESDE data.usuario
+        localStorage.setItem(
+          "usuario_nombre",
+          data.usuario.nombre || data.usuario.nombre_completo || "Administrador"
+        );
+
+        // ✅ guardar username también
+        localStorage.setItem(
+          "usuario_user",
+          data.usuario.usuario || data.usuario.username || ""
+        );
+
+        window.location.href = "index.html";
+
+      } else {
+        document.getElementById("loginMsg").innerText =
+          data.mensaje || "Error de login";
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById("loginMsg").innerText =
+        "Error de conexión";
+    });
+}
+</script>
+
+</body>
+</html>
