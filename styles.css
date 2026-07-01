@@ -388,41 +388,44 @@ li {
 
 #calendarioCuotas {
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
+
 
 #calendarioCuotas .cuota-card {
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-sm);
-  padding: 16px;
+  padding: 8px 10px;
   background: var(--color-card);
   font-size: 13px;
   box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+  margin-bottom: 6px;
 }
 
 #calendarioCuotas .cuota-card strong {
   display: block;
-  margin-bottom: 8px;
-  font-size: 15px;
+  margin-bottom: 2px;
+  font-size: 13px;
 }
 
 #calendarioCuotas .cuota-card .cuota-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 8px;
-  margin-top: 8px;
+  display: block;
+  margin-top: 4px;
   color: var(--color-texto-sec);
+  line-height: 1.5;
 }
 
 #calendarioCuotas .cuota-card .cuota-meta div {
   line-height: 1.4;
+  font-size: 12px;
+  margin-bottom: 2px;
 }
 
 #calendarioCuotas .cuota-card .cuota-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
+  flex-wrap: nowrap;
+  gap: 4px;
+  margin-top: 4px;
 }
 
 #calendarioCuotas .cuota-card.cuota-pendiente {
@@ -884,31 +887,51 @@ html, body {
 }
 
 .cuota-actions {
-  margin-top: 10px;
+  margin-top: 4px;
   display: flex;
-  gap: 10px;
+  gap: 4px;
+  flex-wrap: nowrap;
 }
 
-.cuota-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 8px;
+.cuota-actions button {
+  padding: 5px 8px;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
-.cuota-grid div {
-  font-size: 14px;
-}
+
+
 
 /* compactar tarjeta */
 .cuota-card {
-  padding: 12px;
-  border-radius: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
 }
 
 /* botones más pegados */
 .cuota-actions {
-  margin-top: 8px;
+  margin-top: 4px;
   display: flex;
-  gap: 8px;
+  gap: 4px;
+}
+
+.cuota-info{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:8px 30px;
+    margin-top:8px;
+}
+
+.cuota-info div{
+    margin:0;
+    font-size:14px;
+    line-height:1.4;
+}
+
+/* El Total a pagar ocupa toda la fila */
+.cuota-info div:last-child{
+    grid-column:1 / -1;
+    margin-top:4px;
+    font-size:15px;
 }

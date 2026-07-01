@@ -53,46 +53,28 @@ function cargarCalendarioCuotas(prestamoId) {
         const moraAplicada = Number(c.mora || 0);
         const totalPagar = Number(c.total_pagar || saldoActual + moraAplicada);
 
-        // ✅ Título
         const titulo = document.createElement("strong");
         titulo.textContent = `Cuota ${c.numero}`;
         div.appendChild(titulo);
 
-        // ✅ CONTENIDO ORDENADO (aquí está el cambio clave)
         const contenido = document.createElement("div");
         contenido.className = "cuota-contenido";
 
         contenido.innerHTML = `
-  <div class="cuota-grid">
-    
-    <div>
-      <strong>Fecha vencimiento:</strong><br>
-      ${new Date(c.fecha_pago).toLocaleDateString()}
-    </div>
-  <div>
-      Monto base: $${montoBase.toFixed(2)}
-    </div>
-    <div>
-      Pagado: $${pagado.toFixed(2)}
-    </div>
-    <div>
-      <strong>Saldo actual:</strong><br>
-      $${saldoActual.toFixed(2)}
-    </div>
-    <div>
-      <strong>Total a pagar:</strong><br>
-      $${totalPagar.toFixed(2)}
-    </div>
-  </div>
-`;
-
+          <div class="cuota-info">
+            <div>Fecha vencimiento: ${new Date(c.fecha_pago).toLocaleDateString()}</div>
+            <div>Monto base: $${montoBase.toFixed(2)}</div>
+            <div>Pagado: $${pagado.toFixed(2)}</div>
+            <div><strong>Saldo actual:</strong> $${saldoActual.toFixed(2)}</div>
+            <div><strong>Total a pagar:</strong> $${totalPagar.toFixed(2)}</div>
+          </div>
+        `;
 
         div.appendChild(contenido);
 
         if (String(c.estado).toLowerCase() === "pendiente") {
           div.classList.add("cuota-pendiente");
 
-          // ✅ BLOQUE DE ATRASO (como lo tenías antes)
           if (c.dias_mora && Number(c.dias_mora) > 0) {
             const moraBox = document.createElement("div");
             moraBox.className = "cuota-mora-box";
@@ -100,7 +82,6 @@ function cargarCalendarioCuotas(prestamoId) {
             div.appendChild(moraBox);
           }
 
-          // ✅ Mora en dinero (separada)
           if (moraAplicada > 0) {
             const moraDinero = document.createElement("div");
             moraDinero.className = "cuota-mora-box";
