@@ -214,29 +214,42 @@ function enviarWhatsAppRecibo(cuota, totalPrestamo, totalPagado) {
     return;
   }
 
-  // ✅ limpiar número (solo números)
-  const numero = telefono.replace(/\D/g, "");
+  // Limpiar número
+  let numero = telefono.replace(/\D/g, "");
+
+  // Si tiene 8 dígitos, agregar prefijo de Nicaragua
+  if (numero.length === 8) {
+    numero = "505" + numero;
+  }
+
+  // Validar formato final
+  if (!(numero.length === 11 && numero.startsWith("505"))) {
+    alert("Número de teléfono inválido");
+    return;
+  }
 
   const fecha = new Date().toLocaleDateString();
 
-  // ✅ nombre usuario seguro
   const nombreUsuario =
     localStorage.getItem("usuario_nombre") ||
     usuarioActual.usuario ||
     "Administrador";
 
-  // ✅ CÁLCULOS CORRECTOS (DE TODO EL PRÉSTAMO)
+  // Cálculos
   const saldoAnterior = totalPrestamo - (totalPagado - cuota.pagado);
   const saldoActual = totalPrestamo - totalPagado;
 
-  // ✅ total de cuotas
-  const totalCuotas = Math.round(totalPrestamo / Number(cuota.monto));
+  const totalCuotas = Math.round(
+    totalPrestamo / Number(cuota.monto)
+  );
+
   const pendientes = totalCuotas - cuota.numero;
 
-  // ✅ número de recibo
-  const recibo = `A${cuota.numero.toString().padStart(3, "0")}`;
+  const recibo = `A${cuota.numero
+    .toString()
+    .padStart(3, "0")}`;
 
-  // ✅ MENSAJE PROFESIONAL
+  // Mensaje
   const mensaje =
 `📄 *ACTÍVATE*
 
@@ -255,11 +268,10 @@ Saldo actual   C$${saldoActual.toFixed(2)}
 
 Ejecutivo: ${nombreUsuario}`;
 
-  // ✅ URL CORRECTA (SIN &amp;)
-  const url = `https://api.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+  // Abrir WhatsApp
+  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 
-  // ✅ abrir WhatsApp
-  window.location.assign(url);
+  window.location.href = url;
 }
 
 
