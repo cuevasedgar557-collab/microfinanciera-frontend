@@ -3,31 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACTIVATE - inicio de sesión</title>
+    <title>ACTÍVATE - Inicio de Sesión</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
 <div class="login-page">
- <div class="login-card">
 
-    <h1>ACTÍVATE</h1>
-    <h2>Iniciar sesión</h2>
-    <p>Sistema de Gestión de Microcréditos</p>
+    <div class="login-card">
 
-    <input id="loginUsuario" placeholder="Usuario">
-    <input id="loginPassword" type="password" placeholder="Contraseña">
+        <h1>ACTÍVATE</h1>
 
-    <button onclick="login()">Entrar</button>
-    <p id="loginMsg"></p>
+        <h2>Iniciar sesión</h2>
+
+        <p class="login-desc">
+            Sistema privado para la gestión de clientes,
+            préstamos y cobros.
+        </p>
+
+        <input id="loginUsuario" placeholder="Usuario">
+        <input id="loginPassword" type="password" placeholder="Contraseña">
+
+        <button id="loginBtn" onclick="login()" type="button">
+            <span class="btn-text">Entrar</span>
+            <span class="btn-loader" aria-hidden="true"></span>
+        </button>
+
+        <p id="loginMsg"></p>
+
+        <div class="login-footer">
+            <a href="nosotros.html">Quiénes Somos</a>
+            <span>•</span>
+            <a href="privacidad.html">Privacidad</a>
+            <span>•</span>
+            <a href="contacto.html">Contacto</a>
+        </div>
+
+    </div>
 
 </div>
-</div>
 
-  <script src="js/config.js"></script>
-  <script>
+<script src="js/config.js"></script>
+
+<script>
+function setLoginLoading(isLoading) {
+  const btn = document.getElementById("loginBtn");
+  const text = btn.querySelector(".btn-text");
+  const loader = btn.querySelector(".btn-loader");
+
+  btn.disabled = isLoading;
+  btn.classList.toggle("is-loading", isLoading);
+  text.textContent = isLoading ? "Entrando..." : "Entrar";
+  loader.style.display = isLoading ? "inline-block" : "none";
+}
+
 function login() {
   const usuario = document.getElementById("loginUsuario").value;
   const password = document.getElementById("loginPassword").value;
+
+  setLoginLoading(true);
 
   fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
@@ -44,13 +78,11 @@ function login() {
 
         localStorage.setItem("token", data.token);
 
-        // ✅ FIX IMPORTANTE — TOMAR DESDE data.usuario
         localStorage.setItem(
           "usuario_nombre",
           data.usuario.nombre || data.usuario.nombre_completo || "Administrador"
         );
 
-        // ✅ guardar username también
         localStorage.setItem(
           "usuario_user",
           data.usuario.usuario || data.usuario.username || ""
@@ -67,13 +99,12 @@ function login() {
       console.error(err);
       document.getElementById("loginMsg").innerText =
         "Error de conexión";
+    })
+    .finally(() => {
+      setLoginLoading(false);
     });
 }
 </script>
-<div style="text-align:center; margin-top:20px; font-size:14px;">
-    <a href="nosotros.html">Quiénes Somos</a> |
-    <a href="privacidad.html">Política de Privacidad</a> |
-    <a href="contacto.html">Contacto</a>
-</div>
+
 </body>
 </html>

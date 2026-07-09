@@ -627,6 +627,39 @@ button[onclick="login()"] {
   border-radius: var(--radio-md);
 }
 
+#loginBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+}
+
+#loginBtn.is-loading {
+  opacity: 0.9;
+}
+
+#loginBtn:disabled {
+  cursor: wait;
+  opacity: 0.8;
+}
+
+.btn-loader {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  display: none;
+  animation: login-spin 0.8s linear infinite;
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 #loginMsg {
   margin-top: 12px;
   font-size: 13px;
@@ -934,4 +967,30 @@ html, body {
     grid-column:1 / -1;
     margin-top:4px;
     font-size:15px;
+}
+
+.login-footer {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.login-footer a {
+    color: #666;
+    text-decoration: none;
+    margin: 0 5px;
+    transition: color 0.2s;
+}
+
+.login-footer a:hover {
+    color: #2563eb;
+}
+
+.login-desc {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin: 10px 0 20px;
+    line-height: 1.5;
 }
