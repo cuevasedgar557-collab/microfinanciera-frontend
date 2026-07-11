@@ -6,7 +6,10 @@ let prestamoActivoId = null;
 let clienteEditandoId = null;
 let barrioSeleccionadoId = null;
 let estadoClientesCache = {};
-
+let chartPrestamos = null;
+let chartRecuperacion = null;
+let resumenRegistroActual = null;
+let ultimoHistorialPrestamos = null;
 
 //botones//
 document.getElementById("btnPrestamo").addEventListener("click", asignarPrestamo);
@@ -233,33 +236,264 @@ function volverAFichaCliente() {
   document.getElementById("fichaCliente").style.display = "block";
 }
 function cargarRegistroCliente() {
-  // ⚠️ POR AHORA DATOS DE EJEMPLO
-  // luego estos vendrán del backend
 
-  document.getElementById("regPrestamos").textContent = "3";
-  document.getElementById("regCuotasMora").textContent = "4";
-  document.getElementById("regMaxDias").textContent = "12";
-  document.getElementById("regEvaluacion").textContent =
-    "🟠 Cliente frecuente con mora moderada";
+  const token = localStorage.getItem("token");
 
-  const historial = document.getElementById("registroHistorial");
-  historial.innerHTML = "";
+  // =========================
+  // RESUMEN DEL CLIENTE
+  // =========================
+  fetch(
+    `${API_URL}/api/clientes/${clienteActual.id}/registro`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+    .then(res => res.json())
+    .then(data => {
 
-  historial.innerHTML += `
-    <h3>Préstamo #1</h3>
-    <p>Mora: ✅ Sin mora</p>
-    <hr>
-  `;
+      resumenRegistroActual = data;
 
-  historial.innerHTML += `
-    <h3>Préstamo #2</h3>
-    <p>Cuotas atrasadas: 2</p>
-    <ul>
-      <li>Cuota 3 → 10 días</li>
-      <li>Cuota 4 → 6 días</li>
-    </ul>
-    <hr>
-  `;
+      document.getElementById("regPrestamos").textContent =
+        data.prestamos_completados;
+
+      document.getElementById("regActivos").textContent =
+        data.prestamos_activos;
+
+      document.getElementById("regTotalPrestado").textContent =
+        `C$ ${Number(data.total_prestado).toLocaleString()}`;
+
+      document.getElementById("regTotalRecuperado").textContent =
+        `C$ ${Number(data.total_recuperado).toLocaleString()}`;
+
+      document.getElementById("regCuotasMora").textContent =
+        data.cuotas_atrasadas;
+
+      document.getElementById("regMaxDias").textContent =
+        `C$ ${Number(data.mora_total).toLocaleString()}`;
+
+      document.getElementById("regEvaluacion").textContent =
+        data.evaluacion;
+        actualizarPerfilCrediticio(data);
+
+      // ✅ Si el historial ya llegó, dibujar gráficos
+      if (ultimoHistorialPrestamos) {
+
+        renderizarGraficosRegistro(
+          ultimoHistorialPrestamos,
+          resumenRegistroActual
+        );
+
+      }
+
+    })
+    .catch(err => {
+      console.error("Error cargando registro:", err);
+    });
+
+  // =========================
+  // HISTORIAL DE PRÉSTAMOS
+  // =========================
+  fetch(
+    `${API_URL}/api/prestamos/cliente/${clienteActual.id}/historial`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+    .then(res => res.json())
+    .then(prestamos => {
+
+      ultimoHistorialPrestamos = prestamos;
+
+      const historial =
+        document.getElementById("registroHistorial");
+
+      historial.innerHTML = "";
+
+      if (!prestamos || prestamos.length === 0) {
+        historial.innerHTML =
+          "<p>No tiene préstamos finalizados.</p>";
+        return;
+      }
+
+      prestamos.forEach(prestamo => {
+
+        historial.innerHTML += `
+          <div class="card">
+
+            <h4>Préstamo #${prestamo.id}</h4>
+
+            <p>
+              <strong>Monto:</strong>
+              C$ ${Number(prestamo.monto).toLocaleString()}
+            </p>
+
+            <p>
+              <strong>Total a pagar:</strong>
+              C$ ${Number(prestamo.total).toLocaleString()}
+            </p>
+
+            <p>
+              <strong>Interés:</strong>
+              ${Number(prestamo.interes).toFixed(2)}%
+            </p>
+
+            <p>
+              <strong>Fecha inicio:</strong>
+              ${new Date(prestamo.fecha_inicio).toLocaleDateString()}
+            </p>
+
+            <p>
+              <strong>Estado:</strong>
+              ✅ Finalizado
+            </p>
+
+          </div>
+        `;
+      });
+
+      // ✅ Si el resumen ya llegó, dibujar gráficos
+      if (resumenRegistroActual) {
+
+        renderizarGraficosRegistro(
+          prestamos,
+          resumenRegistroActual
+        );
+
+      }
+
+    })
+    .catch(err => {
+      console.error("Error cargando historial:", err);
+
+      document.getElementById("registroHistorial").innerHTML =
+        "<p>Error cargando historial.</p>";
+    });
+
+}
+
+function renderizarGraficosRegistro(prestamos, resumen) {
+
+
+  const canvasPrestamos =
+    document.getElementById("graficoPrestamos");
+
+  const canvasRecuperacion =
+    document.getElementById("graficoRecuperacion");
+
+  if (!canvasPrestamos || !canvasRecuperacion) return;
+
+  if (chartPrestamos) {
+    chartPrestamos.destroy();
+  }
+
+  if (chartRecuperacion) {
+    chartRecuperacion.destroy();
+  }
+
+  chartPrestamos = new Chart(canvasPrestamos, {
+    type: "bar",
+    data: {
+      labels: prestamos.map(p => `#${p.id}`),
+      datasets: [{
+        label: "Monto prestado",
+        data: prestamos.map(p => Number(p.monto)),
+        backgroundColor: "#2563eb"
+      }]
+    },
+    options: {
+      responsive: true
+    }
+  });
+
+  chartRecuperacion = new Chart(canvasRecuperacion, {
+    type: "doughnut",
+    data: {
+      labels: [
+        "Prestado",
+        "Recuperado"
+      ],
+      datasets: [{
+        data: [
+          Number(resumen.total_prestado),
+          Number(resumen.total_recuperado)
+        ],
+        backgroundColor: [
+          "#f59e0b",
+          "#16a34a"
+        ]
+      }]
+    },
+    options: {
+      responsive: true
+    }
+  });
+
+}
+
+function actualizarPerfilCrediticio(data) {
+
+  let score = 50;
+
+  score += data.prestamos_completados * 10;
+
+  score -= data.cuotas_atrasadas * 5;
+
+  score -= Math.floor(
+    data.mora_total / 100
+  );
+
+  if (score > 100) score = 100;
+  if (score < 0) score = 0;
+
+  let texto = "Regular";
+  let color = "#f59e0b";
+
+  if (score >= 80) {
+    texto = "🟢 Excelente";
+    color = "#16a34a";
+  }
+  else if (score >= 60) {
+    texto = "🔵 Bueno";
+    color = "#2563eb";
+  }
+  else if (score >= 40) {
+    texto = "🟠 Regular";
+    color = "#f59e0b";
+  }
+  else {
+    texto = "🔴 Riesgoso";
+    color = "#dc2626";
+  }
+
+  document.getElementById("scoreNivel")
+    .style.width = `${score}%`;
+
+  document.getElementById("scoreNivel")
+    .style.backgroundColor = color;
+
+  document.getElementById("scoreTexto")
+    .textContent = `${texto} (${score}%)`;
+
+  document.getElementById("perfilPrestado")
+    .textContent =
+    `C$ ${Number(data.total_prestado).toLocaleString()}`;
+
+  document.getElementById("perfilRecuperado")
+    .textContent =
+    `C$ ${Number(data.total_recuperado).toLocaleString()}`;
+
+  document.getElementById("perfilCompletados")
+    .textContent =
+    data.prestamos_completados;
+
+  document.getElementById("perfilMora")
+    .textContent =
+    `C$ ${Number(data.mora_total).toLocaleString()}`;
+
 }
 
 

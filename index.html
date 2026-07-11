@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="iTOdn_EJUkgEqvrRNF-8Rh5B9xa2UHwbBwakCKF3lAQ" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <title>Micro financiera</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -555,27 +556,105 @@
     <!-- RESUMEN -->
     <div class="card">
       <h3>Resumen del historial</h3>
-      <p><strong>Préstamos finalizados:</strong> <span id="regPrestamos"></span></p>
-      <p><strong>Cuotas en mora:</strong> <span id="regCuotasMora"></span></p>
-      <p><strong>Máximo atraso:</strong> <span id="regMaxDias"></span> días</p>
-      <p><strong>Evaluación:</strong> <span id="regEvaluacion"></span></p>
+
+      <p>
+        <strong>Préstamos finalizados:</strong>
+        <span id="regPrestamos"></span>
+      </p>
+
+      <p>
+        <strong>Préstamos activos:</strong>
+        <span id="regActivos"></span>
+      </p>
+
+      <p>
+        <strong>Total prestado:</strong>
+        <span id="regTotalPrestado"></span>
+      </p>
+
+      <p>
+        <strong>Total recuperado:</strong>
+        <span id="regTotalRecuperado"></span>
+      </p>
+
+      <p>
+        <strong>Cuotas en mora:</strong>
+        <span id="regCuotasMora"></span>
+      </p>
+
+      <p>
+        <strong>Mora acumulada:</strong>
+        <span id="regMaxDias"></span>
+      </p>
+
+      <p>
+        <strong>Evaluación:</strong>
+        <span id="regEvaluacion"></span>
+      </p>
+
     </div>
 
     <!-- AQUÍ LUEGO VAN LOS GRÁFICOS -->
-    <div class="card">
-      <h3>📈 Gráficos</h3>
-      <p>(Aquí luego se pondrán los gráficos)</p>
+   <div class="card">
+
+  <h3>🎯 Perfil Crediticio</h3>
+
+  <div class="perfil-crediticio">
+
+    <div class="score-box">
+      <h4>Nivel de confianza</h4>
+
+      <div class="score-barra">
+        <div
+          id="scoreNivel"
+          class="score-relleno">
+      </div>
+
+      </div>
+
+      <p id="scoreTexto"></p>
     </div>
+
+    <div class="score-cards">
+
+      <div class="score-card">
+        <h4>Total Prestado</h4>
+        <p id="perfilPrestado"></p>
+      </div>
+
+      <div class="score-card">
+        <h4>Total Recuperado</h4>
+        <p id="perfilRecuperado"></p>
+      </div>
+
+      <div class="score-card">
+        <h4>Préstamos Completados</h4>
+        <p id="perfilCompletados"></p>
+      </div>
+
+      <div class="score-card">
+        <h4>Mora Histórica</h4>
+        <p id="perfilMora"></p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
     <!-- HISTORIAL DETALLADO -->
     <div class="card">
       <h3>Historial de préstamos</h3>
+
       <div id="registroHistorial">
         Selecciona un cliente
       </div>
+
     </div>
 
   </div>
+
 </div>
 <!-- DASHBOARD NUEVO -->
 <div id="dashboard" class="seccion">
