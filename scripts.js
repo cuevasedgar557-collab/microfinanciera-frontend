@@ -226,14 +226,24 @@ document.getElementById("departamento").addEventListener("change", e => {
 
 //registro de los datos del cliente
 function abrirRegistroCliente() {
-  document.getElementById("fichaCliente").style.display = "none";
-  document.getElementById("registroCliente").style.display = "block";
-   cargarRegistroCliente();
+
+  document.getElementById("fichaCliente")
+    .classList.remove("activa");
+
+  document.getElementById("registroCliente")
+    .classList.add("activa");
+
+  cargarRegistroCliente();
 }
 
 function volverAFichaCliente() {
-  document.getElementById("registroCliente").style.display = "none";
-  document.getElementById("fichaCliente").style.display = "block";
+
+  document.getElementById("registroCliente")
+    .classList.remove("activa");
+
+  document.getElementById("fichaCliente")
+    .classList.add("activa");
+
 }
 function cargarRegistroCliente() {
 
