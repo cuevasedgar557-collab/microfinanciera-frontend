@@ -217,11 +217,32 @@
   </div>
 </div>
 
-
 <!-- PRÉSTAMOS -->
 <div id="prestamos" class="seccion">
 
-  <div class="card">
+      <div class="prestamos-tabs">
+
+        <button
+          id="btnVistaNuevoPrestamo"
+          class="tab-prestamo activo">
+          Nuevo préstamo
+        </button>
+
+        <button
+          id="btnVistaPrestamoExistente"
+          class="tab-prestamo">
+          Préstamo existente
+        </button>
+
+        <button
+          id="btnVistaPrestamosActivos"
+          class="tab-prestamo">
+          Préstamos activos
+        </button>
+
+    </div>
+
+  <div id="vistaNuevoPrestamo" class="card">
     <h2>Asignar Préstamo</h2>
 
     <input
@@ -324,7 +345,7 @@
     <button id="btnPrestamo">Asignar</button>
   </div>
 
-  <div class="card" style="margin-top:20px;">
+  <div id="vistaPrestamoExistente" class="card" style="display:none; margin-top:20px;">
     <h2>Agregar préstamo existente</h2>
 
     <input
@@ -422,10 +443,23 @@
       </select>
     </div>
 
-    <button id="btnPrestamoExistente">Agregar préstamo existente</button>
+    <button id="btnPrestamoExistente">
+      Agregar préstamo existente
+    </button>
   </div>
 
+  <div
+  id="vistaPrestamosActivos"
+  class="card"
+  style="display:none; margin-top:20px;"
+  >
+      <h2>📋 Préstamos Activos</h2>
+
+    <div id="listaPrestamosActivos"></div>
+    </div>
+
 </div>
+
 <!-- CUOTAS -->
 <div id="cuotas" class="seccion">
     <div class="card">

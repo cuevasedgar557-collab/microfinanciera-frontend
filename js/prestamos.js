@@ -302,6 +302,8 @@ function cargarPrestamosCliente(clienteId) {
       card.appendChild(inicioLabel);
       card.appendChild(document.createTextNode(` ${new Date(activo.fecha_inicio).toLocaleDateString()}`));
 
+      
+
       if (activo.tipo_respaldo === "fiador") {
         const respaldo = document.createElement("div");
         respaldo.style.marginTop = "12px";
@@ -525,8 +527,6 @@ function cargarResumenMoraCliente(clienteId) {
     .then(res => res.json())
     
     .then(data => {
-      console.log("RESUMEN MORA:", data);
-
       const div = document.getElementById(`prestamo-${clienteId}`);
       if (!div) return;
 
@@ -711,3 +711,223 @@ document.getElementById("fiadorMunicipioExistente").addEventListener("change", f
 
   cargarBarrios(municipioId, "listaBarriosFiadorExistente");
 });
+
+function mostrarVistaPrestamos(vista) {
+
+  document.getElementById(
+    "vistaNuevoPrestamo"
+  ).style.display = "none";
+
+  document.getElementById(
+    "vistaPrestamoExistente"
+  ).style.display = "none";
+
+  document.getElementById(
+    "vistaPrestamosActivos"
+  ).style.display = "none";
+
+  document.getElementById(vista)
+    .style.display = "block";
+
+  document
+    .querySelectorAll(".tab-prestamo")
+    .forEach(btn => {
+      btn.classList.remove("activo");
+    });
+
+  if (vista === "vistaNuevoPrestamo") {
+
+    document
+      .getElementById("btnVistaNuevoPrestamo")
+      .classList.add("activo");
+
+  }
+
+  if (vista === "vistaPrestamoExistente") {
+
+    document
+      .getElementById("btnVistaPrestamoExistente")
+      .classList.add("activo");
+
+  }
+
+  if (vista === "vistaPrestamosActivos") {
+
+    document
+      .getElementById("btnVistaPrestamosActivos")
+      .classList.add("activo");
+
+    cargarPrestamosActivos();
+
+  }
+
+}
+
+
+document.getElementById("btnVistaNuevoPrestamo")
+  .addEventListener("click", () => {
+
+    mostrarVistaPrestamos(
+      "vistaNuevoPrestamo"
+    );
+
+  });
+
+document.getElementById("btnVistaPrestamoExistente")
+  .addEventListener("click", () => {
+
+    mostrarVistaPrestamos(
+      "vistaPrestamoExistente"
+    );
+
+  });
+
+document.getElementById("btnVistaPrestamosActivos")
+  .addEventListener("click", () => {
+
+    mostrarVistaPrestamos(
+      "vistaPrestamosActivos"
+    );
+
+  });
+
+function cargarPrestamosActivos() {
+
+  const token = localStorage.getItem("token");
+
+  fetch(
+    `${API_URL}/api/prestamos/activos`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+    .then(res => res.json())
+    .then(data => {
+
+      const cont =
+        document.getElementById(
+          "listaPrestamosActivos"
+        );
+
+      cont.innerHTML = "";
+
+      if (!data.length) {
+
+        cont.innerHTML =
+          "<p>No hay préstamos activos.</p>";
+
+        return;
+      }
+
+      data.forEach(prestamo => {
+
+        const card =
+          document.createElement("div");
+
+        card.className = "card prestamo-activo-card";
+
+        card.innerHTML = `
+          <strong>Cliente:</strong>
+          ${prestamo.cliente}<br>
+
+          <strong>Monto:</strong>
+          C$${prestamo.monto}<br>
+
+          <strong>Total:</strong>
+          C$${prestamo.total}<br>
+
+          <strong>Plazo:</strong>
+          ${prestamo.plazo}
+          (${prestamo.tipo_cuota})<br>
+
+          <strong>Fecha:</strong>
+          ${new Date(
+            prestamo.fecha_inicio
+          ).toLocaleDateString()}
+  
+          <br><br>
+
+          <button
+            class="btn-anular-prestamo"
+            data-id="${prestamo.id}">
+              ❌ Anular
+          </button>
+        `;
+
+        cont.appendChild(card);
+
+      const btn =
+        card.querySelector(
+          ".btn-anular-prestamo"
+        );
+
+        btn.addEventListener(
+        "click",
+          () => anularPrestamo(prestamo.id)
+        );
+
+
+      });
+
+    })
+    .catch(err => {
+
+      console.error(err);
+
+    });
+
+}
+
+function anularPrestamo(prestamoId){
+
+  const motivo = prompt(
+    "Motivo de la anulación:"
+  );
+
+  if(!motivo){
+    return;
+  }
+
+  fetch(
+    `${API_URL}/api/prestamos/${prestamoId}/anular`,
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        Authorization:
+          `Bearer ${localStorage.getItem("token")}`
+      },
+      body:JSON.stringify({
+        motivo
+      })
+    }
+  )
+  .then(async res => {
+
+    const data = await res.json();
+
+    if(!res.ok){
+      throw new Error(
+        data.mensaje || "Error"
+      );
+    }
+
+    return data;
+
+  })
+  .then(data => {
+
+    alert(data.mensaje);
+
+    cargarPrestamosActivos();
+
+  })
+  .catch(err => {
+
+    alert(err.message);
+
+  });
+
+}

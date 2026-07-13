@@ -74,8 +74,6 @@ function login() {
     .then(data => {
       if (data.token) {
 
-        console.log("LOGIN RESPONSE:", data);
-
         localStorage.setItem("token", data.token);
 
         localStorage.setItem(

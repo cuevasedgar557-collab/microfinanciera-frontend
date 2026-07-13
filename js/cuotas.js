@@ -35,11 +35,12 @@ function cargarCalendarioCuotas(prestamoId) {
         return;
       }
 
-      let totalPrestamo = 0;
-      let totalPagado = 0;
+      const totalPrestamo =
+    Number(cuotas[0]?.total_prestamo || 0);
 
-      cuotas.forEach(c => {
-        totalPrestamo += Number(c.monto);
+    let totalPagado = 0;
+
+    cuotas.forEach(c => {
         totalPagado += Number(c.pagado);
       });
 
@@ -148,8 +149,16 @@ function ingresarPagoCuota(cuotaId, saldoActual) {
   }
 
   if (montoNum > saldoActual) {
-    alert("El monto no puede ser mayor al saldo pendiente");
-    return;
+
+    const continuar = confirm(
+      "El monto ingresado es mayor que la cuota acordada.\n\n" +
+      "La diferencia será aplicada automáticamente a las próximas cuotas.\n\n" +
+      "¿Desea continuar?"
+    );
+
+    if (!continuar) {
+      return;
+    }
   }
 
   fetch(`${API_URL}/api/cuotas/${cuotaId}/pago`, {
@@ -160,14 +169,25 @@ function ingresarPagoCuota(cuotaId, saldoActual) {
     },
     body: JSON.stringify({ monto: montoNum })
   })
-    .then(res => res.json())
+    .then(async res => {
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.mensaje || "Error registrando el pago"
+        );
+      }
+
+      return data;
+    })
     .then(() => {
       alert("Pago registrado ✅");
       cargarCalendarioCuotas(prestamoActivoId);
     })
     .catch(err => {
       console.error(err);
-      alert("Error registrando el pago");
+      alert(err.message);
     });
 }
 function pagarCuota(cuotaId, montoPendiente) {
@@ -202,6 +222,12 @@ function pagarCuota(cuotaId, montoPendiente) {
     });
 }
 //recido de cuota
+function formatearMonto(valor) {
+  return Number(valor)
+    .toFixed(1)
+    .replace(".0", "");
+}
+
 
 function enviarWhatsAppRecibo(cuota, totalPrestamo, totalPagado) {
   if (!clienteActual) return;
@@ -239,15 +265,15 @@ function enviarWhatsAppRecibo(cuota, totalPrestamo, totalPagado) {
   const saldoAnterior = totalPrestamo - (totalPagado - cuota.pagado);
   const saldoActual = totalPrestamo - totalPagado;
 
-  const totalCuotas = Math.round(
-    totalPrestamo / Number(cuota.monto)
-  );
-
-  const pendientes = totalCuotas - cuota.numero;
-
   const recibo = `A${cuota.numero
     .toString()
     .padStart(3, "0")}`;
+
+  // Detectar posible adelanto
+  const adelanto =
+    Number(cuota.pagado) > Number(cuota.monto)
+      ? "\n✅ Se aplicó adelanto a cuotas futuras."
+      : "";
 
   // Mensaje
   const mensaje =
@@ -255,16 +281,17 @@ function enviarWhatsAppRecibo(cuota, totalPrestamo, totalPagado) {
 
 ${nombreCliente}
 
-Cuota pactada C$${Number(cuota.monto).toFixed(2)}
-Cant. cuota ${cuota.numero}
-Pendiente ${pendientes}
+✅ Pago registrado correctamente
+
+Cuota N° ${cuota.numero}
 
 Fecha: ${fecha}
 Recibo: ${recibo}
 
-Saldo anterior C$${saldoAnterior.toFixed(2)}
-Abono total    C$${Number(cuota.pagado).toFixed(2)}
-Saldo actual   C$${saldoActual.toFixed(2)}
+Saldo anterior C$${formatearMonto(saldoAnterior)}
+Abono total    C$${formatearMonto(cuota.pagado)}
+Saldo actual   C$${formatearMonto(saldoActual)}
+${adelanto}
 
 Ejecutivo: ${nombreUsuario}`;
 
@@ -273,7 +300,6 @@ Ejecutivo: ${nombreUsuario}`;
 
   window.location.href = url;
 }
-
 
 
 document.addEventListener("DOMContentLoaded", () => {

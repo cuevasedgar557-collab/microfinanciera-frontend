@@ -13,7 +13,6 @@ function cargarCobrosHoy() {
       return res.json();
     })
     .then(data => {
-      console.log(data); // Agrega esta línea para ver los datos que la API devuelve
       cont.innerHTML = "";
 
       if (!data.length) {

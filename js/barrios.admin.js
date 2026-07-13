@@ -86,8 +86,6 @@ function crearBarrioAdmin() {
     return;
   }
 
-  console.log("Municipio seleccionado:", municipioId);
-
   fetch(`${API_URL}/api/barrios`, {
     method: "POST",
     headers: {
