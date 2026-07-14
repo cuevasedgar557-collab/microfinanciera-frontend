@@ -60,12 +60,17 @@ function mostrarSeccion(id) {
   cargarUsuarios();
 }
 // recordatorios
-if (id === "recordatorios") {
-  cargarRecordatorios("hoy");
-}
-if (id === "adminBarrios") {
-  cargarDepartamentosBarrio();
-  cargarBarriosAdmin();
+  if (id === "recordatorios") {
+    cargarRecordatorios("hoy");
+  }
+  //barrios
+  if (id === "adminBarrios") {
+    cargarDepartamentosBarrio();
+    cargarBarriosAdmin();
+  }
+  //auditoria
+  if (id === "auditoria") {
+  cargarAuditoria();
 }
 
 
@@ -181,14 +186,15 @@ function cargarUsuarios() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const datosUsuario = obtenerDatosUsuarioDesdeToken();
+
   if (!datosUsuario) return;
 
-  // Mostrar dashboard como pantalla principal
   mostrarSeccion("dashboard");
 
-  // 🔒 Ocultar botón "Usuarios" si NO es admin
   if (datosUsuario.rol !== "administrador") {
+
     const btnUsuarios = document.querySelector(
       "button[onclick=\"mostrarSeccion('adminUsuarios')\"]"
     );
@@ -196,7 +202,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnUsuarios) {
       btnUsuarios.style.display = "none";
     }
+
+    const btnAuditoria = document.getElementById(
+      "btnAuditoria"
+    );
+
+    if (btnAuditoria) {
+      btnAuditoria.style.display = "none";
+    }
+
   }
+
 });
 function toggleMenu() {
   document.querySelector('.menu').classList.toggle('open');
@@ -533,6 +549,105 @@ document.getElementById("fiadorDepartamento").addEventListener("change", e => {
   cargarMunicipios(departamentoId, "fiadorMunicipio");
 });
 
+
+
+console.log("USUARIO:", JSON.parse(
+  atob(localStorage.getItem("token").split(".")[1])
+));
+
+
+function cargarAuditoria() {
+
+  const token = localStorage.getItem("token");
+
+  fetch(
+    `${API_URL}/api/prestamos/auditoria`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+    .then(res => {
+
+      if (!res.ok) {
+        throw new Error("No autorizado");
+      }
+
+      return res.json();
+
+    })
+    .then(data => {
+
+      const cont =
+        document.getElementById(
+          "listaAuditoria"
+        );
+
+      cont.innerHTML = "";
+
+      if (!data.length) {
+
+        cont.innerHTML =
+          "<p>No existen anulaciones registradas.</p>";
+
+        return;
+
+      }
+
+      data.forEach(item => {
+
+        const card =
+          document.createElement("div");
+
+        card.className = "card auditoria-card";
+
+        card.innerHTML = `
+          <p>
+            <strong>📅 Fecha:</strong>
+            ${new Date(item.fecha)
+              .toLocaleString()}
+          </p>
+
+          <p>
+            <strong>👤 Usuario:</strong>
+            ${item.usuario}
+          </p>
+
+          <p>
+            <strong>👥 Cliente:</strong>
+            ${item.cliente}
+          </p>
+
+          <p>
+            <strong>💰 Monto:</strong>
+            C$${Number(item.monto)
+              .toLocaleString()}
+          </p>
+
+          <p>
+            <strong>📝 Motivo:</strong>
+            ${item.motivo}
+          </p>
+        `;
+
+        cont.appendChild(card);
+
+      });
+
+    })
+    .catch(err => {
+
+      console.error(err);
+
+      document.getElementById(
+        "listaAuditoria"
+      ).innerHTML =
+        "<p>Error cargando auditoría.</p>";
+
+    });
+
+}
 
 cargarClientes();
 

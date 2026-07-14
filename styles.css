@@ -1131,3 +1131,13 @@ html, body {
 .btn-anular-prestamo:hover{
   background:#bb2d3b;
 }
+
+
+.auditoria-card{
+  margin-bottom:15px;
+  border-left:5px solid #2563eb;
+}
+
+.auditoria-card p{
+  margin:6px 0;
+}
