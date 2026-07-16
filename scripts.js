@@ -71,10 +71,22 @@ function mostrarSeccion(id) {
   //auditoria
   if (id === "auditoria") {
   cargarAuditoria();
-}
+  }
+  //notificaciones
+  if (id === "notificaciones") {
+  cargarNotificaciones();
+  }
+
+  //notificaciones admin
+  if (
+  id === "adminNotificaciones"
+  ) {
+  cargarDestinatariosNotificacion();
+  cargarHistorialNotificaciones();
+  }
 
 
-const menu = document.querySelector(".menu");
+  const menu = document.querySelector(".menu");
   if (menu) {
     menu.classList.remove("open");
   }
@@ -191,8 +203,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!datosUsuario) return;
 
+  // Pantalla inicial
   mostrarSeccion("dashboard");
 
+  // Ocultar opciones solo-admin
   if (datosUsuario.rol !== "administrador") {
 
     const btnUsuarios = document.querySelector(
@@ -203,12 +217,18 @@ document.addEventListener("DOMContentLoaded", () => {
       btnUsuarios.style.display = "none";
     }
 
-    const btnAuditoria = document.getElementById(
-      "btnAuditoria"
-    );
+    const btnAuditoria =
+      document.getElementById("btnAuditoria");
 
     if (btnAuditoria) {
       btnAuditoria.style.display = "none";
+    }
+
+    const btnAdminNotificaciones =
+      document.getElementById("btnAdminNotificaciones");
+
+    if (btnAdminNotificaciones) {
+      btnAdminNotificaciones.style.display = "none";
     }
 
   }

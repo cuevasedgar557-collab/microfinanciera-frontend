@@ -16,8 +16,61 @@
     window.location.href = "login.html";
   }
 </script>
-<h1>Micro financiera</h1>
-<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+<div class="topbar">
+
+  <h1>ACTIVATE</h1>
+
+       <div id="campanitaNotificaciones"
+       onclick="togglePanelNotificaciones()">
+
+        <svg
+          class="campana-svg"
+          viewBox="0 0 24 24">
+
+          <path
+            d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+          </path>
+
+          <path
+            d="M13.73 21a2 2 0 01-3.46 0"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round">
+          </path>
+
+        </svg>
+
+        <span id="contadorNotificaciones">
+          0
+        </span>
+
+      </div>
+
+</div>
+        <div id="panelNotificaciones" class="panel-notificaciones">
+
+            <div id="contenidoPanelNotificaciones">
+
+            Cargando...
+
+          </div>
+
+        </div>
+    <button
+      class="menu-toggle"
+      onclick="toggleMenu()">
+      ☰
+    </button>
+
+  </div>
+
+</div>
 <!-- MENÚ -->
 <div class="menu">
     <button onclick="logout()">Salir</button>
@@ -480,6 +533,69 @@
   </div>
 </div>
 
+<!-- ADMINISTRAR NOTIFICACIONES -->
+
+<!-- ADMIN NOTIFICACIONES -->
+<div id="adminNotificaciones" class="seccion">
+
+  <div class="card">
+
+    <h2>📢 Enviar Notificación</h2>
+
+    <input
+      type="text"
+      id="tituloNotificacion"
+      placeholder="Título"
+    >
+
+    <textarea
+      id="mensajeNotificacion"
+      placeholder="Mensaje"
+      style="width:100%;min-height:120px;"
+    ></textarea>
+
+    <select id="prioridadNotificacion">
+
+      <option value="normal">
+        Normal
+      </option>
+
+      <option value="importante">
+        Importante
+      </option>
+
+      <option value="urgente">
+        Urgente
+      </option>
+
+    </select>
+
+    <select id="destinatarioNotificacion">
+
+      <option value="todos">
+        Todos los trabajadores
+      </option>
+
+    </select>
+
+    <button id="btnEnviarNotificacion">
+      Enviar Notificación
+    </button>
+
+    <hr>
+
+    <h3>📢 Historial de Notificaciones</h3>
+
+    <div id="historialNotificaciones">
+
+      Cargando historial...
+
+    </div>
+
+  </div>
+
+</div>
+
  <!-- AUDITORÍA -->
     <div id="auditoria" class="seccion">
 
@@ -762,6 +878,29 @@
 
 </div>
 
+<!-- NOTIFICACIONES -->
+ <div id="notificaciones" class="seccion">
+
+  <div class="card">
+
+    <h2>🔔 Notificaciones</h2>
+
+  <button id="btnLimpiarNotificaciones">
+        🗑 Limpiar atendidas
+    </button>
+
+    <br><br>
+
+    <div id="listaNotificaciones">
+
+      Cargando notificaciones...
+
+    </div>
+
+  </div>
+
+</div>
+
 <script src="js/config.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/recordatorios.js"></script>
@@ -772,4 +911,5 @@
 <script src="js/barrios.admin.js"></script>
 <script src="js/trabajos.admin.js"></script>
 <script src="js/dashboard.js"></script>
+<script src="js/notificaciones.js"></script>
 </html>
