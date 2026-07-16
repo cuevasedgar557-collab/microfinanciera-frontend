@@ -10,6 +10,7 @@ let chartPrestamos = null;
 let chartRecuperacion = null;
 let resumenRegistroActual = null;
 let ultimoHistorialPrestamos = null;
+let usuarioEditando = null;
 
 //botones//
 document.getElementById("btnPrestamo").addEventListener("click", asignarPrestamo);
@@ -140,61 +141,206 @@ if (btnCrearUsuario) {
 }
 
 function crearUsuario() {
-  const token = localStorage.getItem("token");
 
-  fetch(`${API_URL}/api/usuarios`, {
-    method: "POST",
+  const token =
+    localStorage.getItem("token");
+
+  const datos = {
+    nombre:
+      document.getElementById(
+        "nombreUsuario"
+      ).value,
+
+    usuario:
+      document.getElementById(
+        "usuarioNuevo"
+      ).value,
+
+    password:
+      document.getElementById(
+        "passwordNuevo"
+      ).value,
+
+    rol_id:
+      document.getElementById(
+        "rolUsuario"
+      ).value
+  };
+
+  const url = usuarioEditando
+    ? `${API_URL}/api/usuarios/${usuarioEditando}`
+    : `${API_URL}/api/usuarios`;
+
+  const method =
+    usuarioEditando
+      ? "PUT"
+      : "POST";
+
+  fetch(url, {
+    method,
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+      "Content-Type":
+        "application/json",
+
+      Authorization:
+        `Bearer ${token}`
     },
-    body: JSON.stringify({
-      nombre: document.getElementById("nombreUsuario").value,
-      usuario: document.getElementById("usuarioNuevo").value,
-      password: document.getElementById("passwordNuevo").value,
-      rol_id: document.getElementById("rolUsuario").value
-    })
+    body: JSON.stringify(datos)
   })
     .then(res => res.json())
     .then(data => {
+
       alert(data.mensaje);
+
+      document.getElementById(
+        "nombreUsuario"
+      ).value = "";
+
+      document.getElementById(
+        "usuarioNuevo"
+      ).value = "";
+
+      document.getElementById(
+        "passwordNuevo"
+      ).value = "";
+
+      document.getElementById(
+        "rolUsuario"
+      ).value = "2";
+
+      usuarioEditando = null;
+
+      document.getElementById(
+        "btnGuardarUsuario"
+      ).textContent =
+        "Crear Usuario";
+
       cargarUsuarios();
+
     });
+
+}
+
+
+function editarUsuario(usuario) {
+
+  usuarioEditando = usuario.id;
+
+  document.getElementById(
+    "nombreUsuario"
+  ).value = usuario.nombre;
+
+  document.getElementById(
+    "usuarioNuevo"
+  ).value = usuario.usuario;
+
+  document.getElementById(
+    "passwordNuevo"
+  ).value = "";
+
+  document.getElementById(
+    "rolUsuario"
+  ).value =
+    usuario.rol === "administrador"
+      ? "1"
+      : "2";
+    
+      document.getElementById(
+        "btnGuardarUsuario"
+      ).textContent =
+      "Guardar Cambios";
 }
 
 function cargarUsuarios() {
+
   const token = localStorage.getItem("token");
+
   if (!token) return;
 
-  const datosUsuario = obtenerDatosUsuarioDesdeToken();
-  if (!datosUsuario || datosUsuario.rol !== "administrador") return;
+  const datosUsuario =
+    obtenerDatosUsuarioDesdeToken();
 
-  fetch(`${API_URL}/api/usuarios`, {
-    headers: {
-      Authorization: `Bearer ${token}`
+  if (
+    !datosUsuario ||
+    datosUsuario.rol !== "administrador"
+  ) return;
+
+  fetch(
+    `${API_URL}/api/usuarios`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     }
-  })
+  )
     .then(res => {
-      if (!res.ok) throw new Error("No autorizado");
+
+      if (!res.ok) {
+
+        throw new Error(
+          "No autorizado"
+        );
+
+      }
+
       return res.json();
+
     })
     .then(data => {
+
       if (!Array.isArray(data)) return;
 
-      const lista = document.getElementById("listaUsuarios");
+      const lista =
+        document.getElementById(
+          "listaUsuarios"
+        );
+
       lista.innerHTML = "";
 
       data.forEach(u => {
-        const li = document.createElement("li");
-        const strong = document.createElement("strong");
-        strong.textContent = u.nombre;
 
-        li.appendChild(strong);
-        li.appendChild(document.createTextNode(` (${u.usuario}) - ${u.rol}`));
+        const li =
+          document.createElement("li");
+
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+        li.style.alignItems = "center";
+
+        const info =
+          document.createElement("span");
+
+        info.innerHTML =
+          `<strong>${u.nombre}</strong> (${u.usuario}) - ${u.rol}`;
+
+        li.appendChild(info);
+
+        if (u.id !== datosUsuario.id) {
+
+          const btnEditar =
+            document.createElement("button");
+
+          btnEditar.textContent =
+            "✏️ Editar";
+
+          btnEditar.onclick = () => {
+            editarUsuario(u);
+          };
+
+          li.appendChild(btnEditar);
+
+        }
+
         lista.appendChild(li);
+
       });
+
     })
-    .catch(err => console.error(err));
+    .catch(err => {
+
+      console.error(err);
+
+    });
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
