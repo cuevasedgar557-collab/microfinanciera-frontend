@@ -3,7 +3,7 @@ function crearRecordatorio(clienteId) {
   const fecha = document.getElementById("recordatorioFecha").value;
 
   if (!texto || !fecha) {
-    alert("Completa el texto y la fecha del recordatorio");
+    mostrarToast("Completa el texto y la fecha del recordatorio", "warning");
     return;
   }
 

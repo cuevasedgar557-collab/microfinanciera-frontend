@@ -70,7 +70,7 @@ function crearTrabajoAdmin() {
   const nombre = input.value.trim();
 
   if (!nombre) {
-    alert("Escribe el nombre del trabajo");
+    mostrarToast("Escribe el nombre del trabajo", "warning");
     return;
   }
 

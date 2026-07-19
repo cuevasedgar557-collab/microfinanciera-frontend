@@ -190,7 +190,7 @@ function crearUsuario() {
     .then(res => res.json())
     .then(data => {
 
-      alert(data.mensaje);
+      mostrarToast(data.mensaje, "success");
 
       document.getElementById(
         "nombreUsuario"

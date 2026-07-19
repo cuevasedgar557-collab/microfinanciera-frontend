@@ -20,7 +20,7 @@ function guardarCliente() {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    alert("Sesión expirada, vuelve a iniciar sesión");
+    mostrarToast("Sesión expirada, vuelve a iniciar sesión", "error");
     return;
   }
 
@@ -90,7 +90,7 @@ function editarCliente(clienteId) {
 function actualizarCliente(clienteId) {
   const token = localStorage.getItem("token");
   if (!token) {
-    alert("No autorizado");
+    mostrarToast("No autorizado", "error");
     return;
   }
   const estadoSelect = document.getElementById("estadoCivil");
@@ -287,7 +287,7 @@ function eliminarCliente(clienteId) {
 
   const token = localStorage.getItem("token");
   if (!token) {
-    alert("No autorizado");
+    mostrarToast("No autorizado", "error");
     return;
   }
 
@@ -302,14 +302,14 @@ function eliminarCliente(clienteId) {
       return res.json();
     })
     .then(data => {
-      alert(data.mensaje || "Cliente eliminado correctamente ✅");
+      mostrarToast(data.mensaje || "Cliente eliminado correctamente ✅", "success");
 
       // ✅ FORZAR RECARGA (USANDO CACHE CORRECTAMENTE)
       cargarClientes(true);
     })
     .catch(err => {
       console.error("Error al eliminar cliente:", err);
-      alert("Error al eliminar el cliente ❌");
+      mostrarToast("Error al eliminar el cliente ❌", "error");
     });
 }
 
@@ -358,7 +358,7 @@ function cargarClientesFrecuentes() {
 
 function guardarComentario(clienteId) {
   const texto = document.getElementById("comentarioTexto").value.trim();
-  if (!texto) return alert("Escribe un comentario");
+  if (!texto) return mostrarToast("Escribe un comentario", "warning");
 
   fetch(`${API_URL}/api/comentarios`, {
     method: "POST",

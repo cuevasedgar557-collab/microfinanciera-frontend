@@ -316,7 +316,7 @@ function enviarNotificacion() {
     .then(res => res.json())
     .then(data => {
 
-      alert(data.mensaje);
+      mostrarToast(data.mensaje, "success");
 
       document.getElementById(
         "tituloNotificacion"
@@ -388,7 +388,7 @@ function limpiarNotificacionesAtendidas() {
   .then(res => res.json())
   .then(data => {
 
-    alert(data.mensaje);
+    mostrarToast(data.mensaje, "success");
 
     cargarNotificaciones();
     cargarPanelNotificaciones();

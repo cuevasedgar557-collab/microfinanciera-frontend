@@ -2,13 +2,13 @@ function asignarPrestamo() {
 
   const token = localStorage.getItem("token");
   if (!token) {
-    alert("No has iniciado sesión");
+    mostrarToast("No has iniciado sesión", "error");
     return;
   }
 
   // ✅ Validar cliente
   if (!clientePrestamoId) {
-    alert("Selecciona un cliente válido de la lista");
+    mostrarToast("Selecciona un cliente válido de la lista", "warning");
     return;
   }
 
@@ -24,7 +24,7 @@ function asignarPrestamo() {
     isNaN(interes) || interes < 0 ||
     isNaN(plazo) || plazo <= 0
   ) {
-    alert("Completa todos los campos correctamente");
+    mostrarToast("Completa todos los campos correctamente", "error");
     return;
   }
 
@@ -32,7 +32,7 @@ function asignarPrestamo() {
 
   // ✅ Validar tipo respaldo
   if (!tipoRespaldo) {
-    alert("Selecciona tipo de respaldo");
+    mostrarToast("Selecciona tipo de respaldo", "warning");
     return;
   }
 
@@ -50,7 +50,7 @@ function asignarPrestamo() {
     };
 
     if (!dataExtra.fiador.nombre || !dataExtra.fiador.cedula) {
-      alert("Completa los datos del fiador");
+      mostrarToast("Completa los datos del fiador", "error");
       return;
     }
   }
@@ -60,7 +60,7 @@ function asignarPrestamo() {
     dataExtra.garantia = document.getElementById("garantiaTexto").value;
 
     if (!dataExtra.garantia) {
-      alert("Escribe la garantía");
+      mostrarToast("Escribe la garantía", "error");
       return;
     }
   }
@@ -87,7 +87,7 @@ function asignarPrestamo() {
       return res.json();
     })
     .then(() => {
-      alert("✅ Préstamo asignado correctamente");
+      mostrarToast("✅ Préstamo asignado correctamente", "success");
 
       // ✅ Limpiar campos principales
       document.getElementById("nombrePrestamo").value = "";
@@ -123,19 +123,19 @@ function asignarPrestamo() {
     })
     .catch(err => {
       console.error(err);
-      alert("Error al asignar préstamo");
+      mostrarToast("Error al asignar préstamo", "error");
     });
 }
 
 function agregarPrestamoExistente() {
   const token = localStorage.getItem("token");
   if (!token) {
-    alert("No has iniciado sesión");
+    mostrarToast("No has iniciado sesión", "error");
     return;
   }
 
   if (!clientePrestamoExistenteId) {
-    alert("Selecciona un cliente válido de la lista");
+    mostrarToast("Selecciona un cliente válido de la lista", "warning");
     return;
   }
 
@@ -153,14 +153,14 @@ function agregarPrestamoExistente() {
     isNaN(plazo) || plazo <= 0 ||
     !fechaInicio
   ) {
-    alert("Completa todos los campos correctamente");
+    mostrarToast("Completa todos los campos correctamente", "error");
     return;
   }
 
   let dataExtra = {};
 
   if (!tipoRespaldo) {
-    alert("Selecciona tipo de respaldo");
+    mostrarToast("Selecciona tipo de respaldo", "warning");
     return;
   }
 
@@ -176,7 +176,7 @@ function agregarPrestamoExistente() {
     };
 
     if (!dataExtra.fiador.nombre || !dataExtra.fiador.cedula) {
-      alert("Completa los datos del fiador");
+      mostrarToast("Completa los datos del fiador", "error");
       return;
     }
   }
@@ -185,7 +185,7 @@ function agregarPrestamoExistente() {
     dataExtra.garantia = document.getElementById("garantiaTextoExistente").value;
 
     if (!dataExtra.garantia) {
-      alert("Escribe la garantía");
+      mostrarToast("Escribe la garantía", "error");
       return;
     }
   }
@@ -213,7 +213,7 @@ function agregarPrestamoExistente() {
       return res.json();
     })
     .then(() => {
-      alert("✅ Préstamo existente agregado correctamente");
+      mostrarToast("✅ Préstamo existente agregado correctamente", "success");
 
       document.getElementById("nombrePrestamoExistente").value = "";
       document.getElementById("montoExistente").value = "";
@@ -229,7 +229,7 @@ function agregarPrestamoExistente() {
     })
     .catch(err => {
       console.error(err);
-      alert("Error al agregar préstamo existente");
+      mostrarToast("Error al agregar préstamo existente", "error");
     });
 }
 
@@ -919,14 +919,14 @@ function anularPrestamo(prestamoId){
   })
   .then(data => {
 
-    alert(data.mensaje);
+    mostrarToast(data.mensaje, "success");
 
     cargarPrestamosActivos();
 
   })
   .catch(err => {
 
-    alert(err.message);
+    mostrarToast(err.message, "error");
 
   });
 

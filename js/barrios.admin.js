@@ -77,12 +77,12 @@ function crearBarrioAdmin() {
   const municipioId = document.getElementById("municipioBarrio").value;
 
   if (!nombre) {
-    alert("Escribe el nombre del barrio");
+    mostrarToast("Escribe el nombre del barrio", "warning");
     return;
   }
 
   if (!municipioId) {
-    alert("Selecciona un municipio");
+    mostrarToast("Selecciona un municipio", "warning");
     return;
   }
 
@@ -114,7 +114,7 @@ function crearBarrioAdmin() {
     })
     .catch(err => {
       console.error("Error creando barrio:", err);
-      alert("Error al crear barrio ❌");
+      mostrarToast("Error al crear barrio ❌", "error");
     });
 }
 //crear barrio admin//
@@ -278,14 +278,14 @@ function eliminarBarrio(id) {
       return res.json();
     })
     .then(data => {
-      alert(data.mensaje || "Barrio eliminado ✅");
+      mostrarToast(data.mensaje || "Barrio eliminado ✅", "success");
 
       // ✅ refrescar lista
       cargarBarriosAdmin();
     })
     .catch(err => {
       console.error("Error eliminando barrio:", err);
-      alert("Error eliminando barrio ❌");
+      mostrarToast("Error eliminando barrio ❌", "error");
     });
 }
 // ✅ CARGAR BARRIOS CUANDO CAMBIA MUNICIPIO (CLIENTES)

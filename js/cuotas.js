@@ -144,7 +144,7 @@ function ingresarPagoCuota(cuotaId, saldoActual) {
   const montoNum = parseFloat(monto);
 
   if (isNaN(montoNum) || montoNum <= 0) {
-    alert("Monto inválido");
+    mostrarToast("Monto inválido", "error");
     return;
   }
 
@@ -182,12 +182,12 @@ function ingresarPagoCuota(cuotaId, saldoActual) {
       return data;
     })
     .then(() => {
-      alert("Pago registrado ✅");
+      mostrarToast("Pago registrado ✅", "success");
       cargarCalendarioCuotas(prestamoActivoId);
     })
     .catch(err => {
       console.error(err);
-      alert(err.message);
+      mostrarToast(err.message, "error");
     });
 }
 function pagarCuota(cuotaId, montoPendiente) {
@@ -218,7 +218,7 @@ function pagarCuota(cuotaId, montoPendiente) {
     })
     .catch(err => {
       console.error("❌ Error al pagar cuota:", err);
-      alert("Error al registrar el pago");
+      mostrarToast("Error al registrar el pago", "error");
     });
 }
 //recido de cuota
@@ -236,7 +236,7 @@ function enviarWhatsAppRecibo(cuota, totalPrestamo, totalPagado) {
   const telefono = clienteActual.telefono;
 
   if (!telefono) {
-    alert("El cliente no tiene número de teléfono");
+    mostrarToast("El cliente no tiene número de teléfono", "warning");
     return;
   }
 
@@ -250,7 +250,7 @@ function enviarWhatsAppRecibo(cuota, totalPrestamo, totalPagado) {
 
   // Validar formato final
   if (!(numero.length === 11 && numero.startsWith("505"))) {
-    alert("Número de teléfono inválido");
+    mostrarToast("Número de teléfono inválido", "error");
     return;
   }
 
